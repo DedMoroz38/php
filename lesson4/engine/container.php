@@ -34,7 +34,6 @@ function resizer($file, $fileLink)
     $image = new SimpleImage();
     $image->load($fileLink);
     $image->resizeToWidth(250);
-    $image->save('image1.jpg');
     $path = '../public/images/small/' . $file;
-    copy($fileLink, $path);
+    $image->save($path);
 }
