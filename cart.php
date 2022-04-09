@@ -1,29 +1,48 @@
 <?php
-include("./DB_connection.php");
-include("./logout.php");
-if (!isset($_COOKIE["login"])){
-    header("Location: login.php");
-} else {
-    $userId = $_COOKIE["userId"];
+include "./DB_connection.php";
+include "./logout.php";
+include "./auth.php";
+include "./make_order.php";
+if (is_auth()){
+    $userId = $_SESSION["userId"];
     $result = mysqli_query($db, "
         SELECT
             *
         FROM
             `catalogItems`
-        WHERE `itemId` IN (SELECT `itemId` FROM `cart` WHERE `userId` = 2);
+        WHERE `itemId` IN (SELECT `itemId` FROM `cart` WHERE `userId` = $userId AND `orderId` IS NULL);
     ");
-    if(!$result){
-        var_dump($db);
-    }
+    
+} else {
+    header("Location: login.php");
+    die();
 }
 if(isset($_GET["delete"])){
     $itemId = $_GET["id"];
-    $userId = $_COOKIE["userId"];
+    $userId = $_SESSION["userId"];
     mysqli_query($db, "DELETE FROM `cart` WHERE `userId` = $userId AND `itemId` = $itemId");
     header("Location: cart.php");
     die();
 }
-    
+$total_price = 0;
+
+
+if(isset($_GET["checkout"])){
+    $address = strip_tags($_GET["address"]);
+    $city = strip_tags($_GET["city"]);
+    $zip = strip_tags($_GET["zip"]);
+    $userId = $_SESSION["userId"];
+    $randomId = uniqid(rand(), true);
+    mysqli_query($db, "UPDATE `cart` SET `orderId` = '$randomId' WHERE `userId` = $userId AND `orderId` IS NULL");
+    mysqli_query($db, "INSERT INTO `orders`(`userId`, `address`, `city`, `zip`, `cartRefId`) VALUES ('$userId', '$address', '$city', '$zip', '$randomId')");
+    header("Location: cart.php");
+    die();
+}
+
+
+
+
+
 ?>
 <!DOCTYPE php>
 <php lang="en">
@@ -121,6 +140,7 @@ if(isset($_GET["delete"])){
                                             </div>
                                         </details>
                                     </li>
+                                    <li class="carts"><a href="admin.php" style="color: white; text-decoration: none;">Admin</a></li>
                                     <li class="right product_icon"><a href="registartion.php"><img src="Pictures/man.svg" alt=""></a></li>
                                     <li class="right product_icon"><a href="login.php" style="color: white; text-decoration: none;">log in</a></li>
                                     <li class="carts"><a href="cart.php"><img src="Pictures/basket.svg" alt=""></a></li>
@@ -150,6 +170,7 @@ if(isset($_GET["delete"])){
                         $name = $row['name'];
                         $description = $row['description'];
                         $price = $row['price'];
+                        $total_price += $price;
                     ?>
                     <a href="product.php?id=<?= $id ?>" class="cart-link">
                         <div class="cards_carts">
@@ -177,22 +198,22 @@ if(isset($_GET["delete"])){
                         <a href="catalog.php" class="continue_buttons">CONTINUE SHOPPING</a>
                     </div>
                 </div>
-                <div class="form_cart">
+                <form class="form_cart" method="get">
                     <div class="cart_form">
                         <h3 class="cart_form_heading">SHIPPING ADRESS</h3>
-                        <input type="text" class="cart_form_input" placeholder="Bangladesh">
-                        <input type="text" class="cart_form_input" placeholder="State">
-                        <input type="text" class="cart_form_input" placeholder="Postcode/Zip">
+                        <input type="text" name="address" class="cart_form_input" placeholder="Address">
+                        <input type="text" name="city" class="cart_form_input" placeholder="City">
+                        <input type="text" name="zip" class="cart_form_input" placeholder="Postcode/Zip">
                         <button class="catr_form_button">GET A QUOTE</button>
                     </div>
                     <div class="form_total_price">
-                        <p class="sub_total">SUB TOTAL <span class="sub_total_price">$900</span></p>
-                        <p class="grand_total">GRAND TOTAL <span class="grand_total_price">$900</span></p>
+                        <p class="sub_total">SUB TOTAL <span class="sub_total_price"><?=$total_price?>$</span></p>
+                        <p class="grand_total">GRAND TOTAL <span class="grand_total_price"><?=$total_price?>$</span></p>
                         <div class="button_cart_box">
-                            <button class="cart_button">PROCEED TO CHECKOUT</button>
+                            <input type="submit" name="checkout" class="cart_button" value="PROCEED TO CHECKOUT"/>
                         </div>
                     </div>
-                </div>
+                </form>
             </div>
         </div>
 
