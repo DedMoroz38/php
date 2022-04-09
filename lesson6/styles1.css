@@ -1,0 +1,28 @@
+* {
+  margin: 0;
+  padding: 0;
+  outline: none;
+}
+
+.top {
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.operations-box {
+  width: 600px;
+  display: flex;
+  justify-content: space-around;
+}
+.operations-box > input {
+  width: 100px;
+}
+
+.operation {
+  position: absolute;
+  list-style-type: none;
+}
+.operation-box {
+  position: relative;
+}
