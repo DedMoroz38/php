@@ -1,10 +1,10 @@
 <?php
-include ("DB_connection.php");
-include("./logout.php");
-include("./addtocart.php");
+include "DB_connection.php";
+include "./logout.php";
+include "./addtocart.php";
 ?>
-<!DOCTYPE php>
-<php lang="en">
+<!DOCTYPE html>
+<html lang="en">
 
     <head>
         <meta charset="UTF-8">
@@ -103,6 +103,7 @@ include("./addtocart.php");
                                             </div>
                                         </details>
                                     </li>
+                                    <li class="carts"><a href="admin.php" style="color: white; text-decoration: none;">Admin</a></li>
                                     <li class="right product_icon"><a href="registartion.php"><img src="Pictures/man.svg" alt=""></a></li>
                                     <li class="right product_icon"><a href="login.php" style="color: white; text-decoration: none;">log in</a></li>
                                     <li class="carts"><a href="cart.php"><img src="Pictures/basket.svg" alt=""></a></li>
@@ -250,4 +251,4 @@ include("./addtocart.php");
 
 
 
-</php>
+</html>

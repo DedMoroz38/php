@@ -111,11 +111,11 @@ $price = $row['price'];
                                             </div>
                                         </details>
                                     </li>
+                                    <li class="carts"><a href="admin.php" style="color: white; text-decoration: none;">Admin</a></li>
                                     <li class="right product_icon"><a href="registartion.php"><img src="Pictures/man.svg" alt=""></a></li>
                                     <li class="right product_icon"><a href="login.php" style="color: white; text-decoration: none;">log in</a></li>
                                     <li class="carts"><a href="cart.php"><img src="Pictures/basket.svg" alt=""></a></li>
                                     <li class="carts"><a href="?logout" style="color: white; text-decoration: none;">Log out</a></li>
-                                </ul>
                             </nav>
                         </div>
                     </div>

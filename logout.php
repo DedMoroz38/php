@@ -1,8 +1,12 @@
 <?php
+    session_start();
+    // var_dump($_SESSION["login"]);
     if(isset($_GET["logout"])){
-        setcookie("login", time() - 3600, '/');
-        setcookie("userId", time() - 3600);
-        header("Location: /");
+        unset($_SESSION["login"]);
+        unset($_SESSION["userId"]);
+        setcookie("hash", $hash, time() - 3600, '/');
+        // die($_SESSION["login"]);
+        header("Location: " . $_SERVER["HTTP_REFERER"]);
         die();
     }
 ?>

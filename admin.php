@@ -1,28 +1,11 @@
 <?php
-include("./DB_connection.php");
-include("./logout.php");
+    include "DB_connection.php";
+    include "./auth.php";
+    if(is_auth() AND $_SESSION["login"] === "admin@gmail.com"){
 
-session_start();
-if (isset($_POST["login"])) {
-    $login = strip_tags($_POST["email"]);
-    $password = strip_tags($_POST["password"]);
-    $login = mysqli_real_escape_string($db, strip_tags(stripslashes($login)));
-    $result = mysqli_query($db, "SELECT * FROM `users` WHERE email = '$login'");
-    $row = mysqli_fetch_assoc($result);
-    if (password_verify($password, $row["password"])){
-        $_SESSION["login"] = $row["email"];
-        $_SESSION["userId"] = $row["userId"];
-        $userId = $_SESSION["userId"];
-        $hash = uniqid(rand(), true);
-        mysqli_query($db, "UPDATE `users` SET `hash` = '$hash' WHERE `userId` = $userId");
-        setcookie("hash", $hash, time() + 3600, '/');
-        header("Location: /");
-        die();
     } else {
-        die("Wrong email or password!");
+        die("You are not admin!");
     }
-    
-}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -50,20 +33,6 @@ if (isset($_POST["login"])) {
                                     </li>
                                     <li>
                                         <searcher></searcher>
-                                        <!-- <div class="search_details">
-                                        <form action="" class="search">
-                                            <input placeholder="Search" class='search_input' type="text">
-                                            <button class="search_button"></button>
-                                        </form>
-                                    </div> -->
-
-                                        <!-- <details class="search_details">
-                                        <summary class="search_summary"><img src="Pictures/loop.svg" alt=""></summary>
-                                        <form action="" class="search">
-                                            <input placeholder="Search" class='search_input' type="text">
-                                            <button class="search_button"></button>
-                                        </form>
-                                    </details> -->
                                     </li>
                                 </ul>
                             </nav>
@@ -113,7 +82,7 @@ if (isset($_POST["login"])) {
                                                     </div>
                                                     <div class="icon_boxes">
                                                         <a class='icon_links' href="cart.php"><img src="Pictures/basket.svg" alt="">
-                                                            <p class="ad_box">Cart</p>
+                                                                   <p class="ad_box">Cart</p>
                                                         </a>
                                                     </div>
                                                 </div>
@@ -134,54 +103,53 @@ if (isset($_POST["login"])) {
         <div class="content_catalog_top content_catalog_top2">
             <div class="container">
                 <div class="catalog_header">
-                    <header class="catalog_heading">LOG IN</header>
+                    <header class="catalog_heading">ALL ORDERS</header>
                 </div>
                 <div class="catalog_menu">
                 </div>
             </div>
         </div>
-        <div class="reg_top">
-            <div class="container registration">
-
-
-
-                <form class="registration_top" method="post">
-                    <p class="reg_name">Your Data</p>
-                    <input type="email" class="reg_input" name="email" value="admin@gmail.com" placeholder='Email'>
-                    <input type="password" class="reg_input" name="password" value="12345678" placeholder='Password'>
-                    <p class="usless_info">Please use 8 or more characters, with at least 1 number and a mixture of
-                        uppercase and lowercase letters</p>
-                    <input class="reg_button" name="login" value="JOIN NOW" type="submit">
-                    <img src="Pictures/arrow_left_reg.svg" alt="">
-                </form>
-                <div class="registration_bottom">
-                    <div class="reg_info">
-                        <h3 class="reg_info_name">LOYALTY HAS ITS PERKS</h3>
-                        <p class="registr_text reg_inform">Get in on the loyalty program where you can earn points and
-                            unlock serious
-                            perks. Starting with these as soon as you join:</p>
-                        <div class="reg_paragraph"><img src="Pictures/tick.svg" alt="">
-                            <p class="registr_text">15% off welcome offer</p>
-                        </div>
-                        <div class="reg_paragraph"><img src="Pictures/tick.svg" alt="">
-                            <p class="registr_text">Free shipping, returns and exchanges on all orders
-
-                            </p>
-                        </div>
-                        <div class="reg_paragraph"><img src="Pictures/tick.svg" alt="">
-                            <p class="registr_text">$10 off a purchase on your birthday
-
-                            </p>
-                        </div>
-                        <div class="reg_paragraph"><img src="Pictures/tick.svg" alt="">
-                            <p class="registr_text">Early access to products</p>
-                        </div>
-                        <div class="reg_paragraph"><img src="Pictures/tick.svg" alt="">
-                            <p class="registr_text">Exclusive offers & rewards</p>
-                        </div>
+        <div class="main_part">
+        <?php
+            $result = mysqli_query($db, "
+            SELECT DISTINCT
+                `orders`.`address`,
+                `orders`.`city`,
+                `orders`.`zip`,
+                `users`.`email`
+            FROM `cart`
+            LEFT JOIN `orders`
+                ON `cart`.`orderId` = `orders`.`cartRefId`
+            LEFT JOIN `users`
+                ON `users`.`userId` = `cart`.`userId`
+            ");
+            while ($row = mysqli_fetch_assoc($result)) {
+                if (!$row['address']){
+                    continue;
+                } else {
+                    $address = $row['address'];
+                    $city = $row['city'];
+                    $zip = $row['zip'];
+                    $email = $row['email'];
+                }
+            ?>
+            <div class="card_div">
+                <div class="figure">
+                    <div class="figcaption">
+                        <p class="figure_header"><span>email: </span><?= $email ?></p>
+                        <p class="figure_paragraph"><span>address: </span><?= $address ?></p>
+                        <p class="figure_paragraph"><span>city: </span><?= $city ?></p>
+                        <p class="figure_paragraph"><span>zip: </span><?= $zip ?></p>
                     </div>
                 </div>
+                <div class="add-box">
+                    <a href="?addtocart&itemId=<?= $id ?>" class="add">
+                        <img src="Pictures/add_cart.svg" class="add-cart" alt="">
+                        <p>Add to Cart</p>
+                    </a>
+                </div>
             </div>
+            <?php } ?>
         </div>
 
         <footer class="footer">
@@ -220,9 +188,5 @@ if (isset($_POST["login"])) {
                 </div>
             </div>
         </footer>
-
-
-
     </body>
-
 </html>

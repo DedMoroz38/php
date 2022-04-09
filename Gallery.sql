@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:8889
--- Generation Time: Apr 07, 2022 at 08:11 PM
+-- Generation Time: Apr 09, 2022 at 07:08 PM
 -- Server version: 5.7.34
 -- PHP Version: 7.4.21
 
@@ -30,7 +30,8 @@ SET time_zone = "+00:00";
 CREATE TABLE `cart` (
   `cartId` int(10) UNSIGNED NOT NULL,
   `userId` int(11) NOT NULL,
-  `itemId` int(11) NOT NULL
+  `itemId` int(11) NOT NULL,
+  `orderId` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -61,22 +62,30 @@ INSERT INTO `catalogItems` (`itemId`, `name`, `image`, `description`, `price`) V
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `orders`
+--
+
+CREATE TABLE `orders` (
+  `orderId` int(10) UNSIGNED NOT NULL,
+  `userId` int(11) NOT NULL,
+  `address` varchar(200) NOT NULL,
+  `city` varchar(50) NOT NULL,
+  `zip` int(6) NOT NULL,
+  `cartRefId` varchar(255) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `users`
 --
 
 CREATE TABLE `users` (
   `userId` int(10) UNSIGNED NOT NULL,
   `email` varchar(100) NOT NULL,
-  `password` varchar(100) NOT NULL
+  `password` varchar(100) NOT NULL,
+  `hash` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
---
--- Dumping data for table `users`
---
-
-INSERT INTO `users` (`userId`, `email`, `password`) VALUES
-(2, 'admin@gmail.com', '12345678'),
-(3, 'andzhelina@gmail.com', '12345678');
 
 --
 -- Indexes for dumped tables
@@ -95,10 +104,17 @@ ALTER TABLE `catalogItems`
   ADD PRIMARY KEY (`itemId`);
 
 --
+-- Indexes for table `orders`
+--
+ALTER TABLE `orders`
+  ADD PRIMARY KEY (`orderId`);
+
+--
 -- Indexes for table `users`
 --
 ALTER TABLE `users`
-  ADD PRIMARY KEY (`userId`);
+  ADD PRIMARY KEY (`userId`),
+  ADD UNIQUE KEY `email` (`email`);
 
 --
 -- AUTO_INCREMENT for dumped tables
@@ -108,7 +124,7 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `cart`
 --
 ALTER TABLE `cart`
-  MODIFY `cartId` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `cartId` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=47;
 
 --
 -- AUTO_INCREMENT for table `catalogItems`
@@ -117,10 +133,16 @@ ALTER TABLE `catalogItems`
   MODIFY `itemId` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
+-- AUTO_INCREMENT for table `orders`
+--
+ALTER TABLE `orders`
+  MODIFY `orderId` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+
+--
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `userId` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `userId` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=48;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

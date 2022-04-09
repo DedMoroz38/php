@@ -2,16 +2,21 @@
 include("./DB_connection.php");
 include("./logout.php");
 
+session_start();
 if (isset($_POST["register"])) {
     $login = strip_tags($_POST["email"]); 
     $password = strip_tags($_POST["password"]);
     if(strlen($password) > 7){
-        mysqli_query($db, "INSERT INTO `users` (`email`, `password`) VALUES ('$login', '$password')");
+        $password = password_hash($password, PASSWORD_DEFAULT);
+        $hash = uniqid(rand(), true);
+        mysqli_query($db, "INSERT INTO `users` (`email`, `password`, `hash`) VALUES ('$login', '$password', '$hash')");
         $result = mysqli_query($db, "SELECT * FROM `users` WHERE email = '$login' AND password = '$password'");
         $row = mysqli_fetch_assoc($result);
-        setcookie("userId", $row['userId'], time()+3600);
-        setcookie("login", password_hash($login, PASSWORD_DEFAULT), time() + 3600, '/');
+        $_SESSION["login"] = $login;
+        $_SESSION["userId"] = $row["userId"];
+        setcookie("hash", $hash, time() + 3600, '/');
         header("Location: /");
+        die();
     } else { 
         die("Password should contain at least 8 characters!");
     }
@@ -113,6 +118,7 @@ if (isset($_POST["register"])) {
                                             </div>
                                         </details>
                                     </li>
+                                    <li class="carts"><a href="admin.php" style="color: white; text-decoration: none;">Admin</a></li>
                                     <li class="right product_icon"><a href="registartion.php"><img src="Pictures/man.svg" alt=""></a></li>
                                     <li class="right product_icon"><a href="login.php" style="color: white; text-decoration: none;">log in</a></li>
                                     <li class="carts"><a href="cart.php"><img src="Pictures/basket.svg" alt=""></a></li>
@@ -139,8 +145,8 @@ if (isset($_POST["register"])) {
 
                 <form class="registration_top" method="post">
                     <p class="reg_name">Your Data</p>
-                    <input type="email" class="reg_input" name="email" value="admin" placeholder='Email'>
-                    <input type="password" class="reg_input" name="password" value="1234" placeholder='Password'>
+                    <input type="email" class="reg_input" name="email" value="admin@gmail.com" placeholder='Email'>
+                    <input type="password" class="reg_input" name="password" value="12345678" placeholder='Password'>
                     <p class="usless_info">Please use 8 or more characters, with at least 1 number and a mixture of
                         uppercase and lowercase letters</p>
                     <input class="reg_button" name="register" value="JOIN NOW" type="submit">
